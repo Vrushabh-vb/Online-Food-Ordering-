@@ -19,7 +19,9 @@ CREATE TABLE Restaurants (
     address VARCHAR(255),
     contact_number VARCHAR(15),
     rating DECIMAL(3, 2) DEFAULT 0.00,
-    status ENUM('open', 'closed') DEFAULT 'open'
+    status ENUM('open', 'closed') DEFAULT 'open',
+      extra_col1 VARCHAR(255) DEFAULT NULL, -- Reserved for future use
+    extra_col2 VARCHAR(255) DEFAULT NULL
 );
 
 -- Resto Signup Table (For Restaurant Owners)
@@ -32,6 +34,8 @@ CREATE TABLE Resto_Signup (
     phone_number VARCHAR(15),
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending', -- Approval system for Super Admin
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      extra_col1 VARCHAR(255) DEFAULT NULL, -- Reserved for future use
+    extra_col2 VARCHAR(255) DEFAULT NULL, -- 
     FOREIGN KEY (restaurant_id) REFERENCES Restaurants(restaurant_id) ON DELETE CASCADE
 );
 
@@ -44,6 +48,8 @@ CREATE TABLE Menu_Items (
     price DECIMAL(10, 2) NOT NULL,
     category VARCHAR(50),
     availability BOOLEAN DEFAULT TRUE,
+      extra_col1 VARCHAR(255) DEFAULT NULL, -- Reserved for future use
+    extra_col2 VARCHAR(255) DEFAULT NULL, -- 
     FOREIGN KEY (restaurant_id) REFERENCES Restaurants(restaurant_id) ON DELETE CASCADE
 );
 
@@ -55,6 +61,8 @@ CREATE TABLE Cart (
     item_id INT NOT NULL,
     quantity INT DEFAULT 1,
     total_price DECIMAL(10, 2) DEFAULT 0.00,
+      extra_col1 VARCHAR(255) DEFAULT NULL, -- Reserved for future use
+    extra_col2 VARCHAR(255) DEFAULT NULL, -- 
     FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (restaurant_id) REFERENCES Restaurants(restaurant_id) ON DELETE CASCADE,
     FOREIGN KEY (item_id) REFERENCES Menu_Items(item_id) ON DELETE CASCADE
@@ -69,6 +77,8 @@ CREATE TABLE Orders (
     status ENUM('pending', 'preparing', 'ready', 'completed', 'canceled') DEFAULT 'pending',
     delivery_status ENUM('pending', 'dispatched', 'delivered') DEFAULT 'pending',
     total_amount DECIMAL(10, 2) NOT NULL,
+      extra_col1 VARCHAR(255) DEFAULT NULL, -- Reserved for future use
+    extra_col2 VARCHAR(255) DEFAULT NULL, -- 
     FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (restaurant_id) REFERENCES Restaurants(restaurant_id) ON DELETE CASCADE
 );
@@ -80,6 +90,8 @@ CREATE TABLE Order_Items (
     item_id INT NOT NULL,
     quantity INT DEFAULT 1,
     price_at_purchase DECIMAL(10, 2) NOT NULL,
+      extra_col1 VARCHAR(255) DEFAULT NULL, -- Reserved for future use
+    extra_col2 VARCHAR(255) DEFAULT NULL, -- 
     FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE,
     FOREIGN KEY (item_id) REFERENCES Menu_Items(item_id) ON DELETE CASCADE
 );
@@ -91,6 +103,8 @@ CREATE TABLE Payment (
     amount DECIMAL(10, 2) NOT NULL,
     payment_method ENUM('credit_card', 'cash', 'UPI') NOT NULL,
     payment_status ENUM('paid', 'pending', 'failed') DEFAULT 'pending',
+      extra_col1 VARCHAR(255) DEFAULT NULL, -- Reserved for future use
+    extra_col2 VARCHAR(255) DEFAULT NULL, -- 
     FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE
 );
 
@@ -99,7 +113,9 @@ CREATE TABLE Super_Admin (
     super_admin_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+      extra_col1 VARCHAR(255) DEFAULT NULL, -- Reserved for future use
+    extra_col2 VARCHAR(255) DEFAULT NULL, -- 
 );
 
 -- Super Admin Actions Table
@@ -110,6 +126,8 @@ CREATE TABLE Super_Admin_Actions (
     target_id INT NOT NULL, -- Can be restaurant_id or user_id, depending on action
     details TEXT,
     action_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+      extra_col1 VARCHAR(255) DEFAULT NULL, -- Reserved for future use
+    extra_col2 VARCHAR(255) DEFAULT NULL, -- 
     FOREIGN KEY (super_admin_id) REFERENCES Super_Admin(super_admin_id) ON DELETE CASCADE
 );
 
@@ -121,7 +139,9 @@ CREATE TABLE Notifications (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     expires_at DATETIME NOT NULL, -- Expiry timestamp
     status TINYINT(1) DEFAULT 1, -- 1 = Active, 0 = Expired,
-    promocode varchar(100)
+    promocode varchar(100),
+      extra_col1 VARCHAR(255) DEFAULT NULL, -- Reserved for future use
+    extra_col2 VARCHAR(255) DEFAULT NULL, -- 
     FOREIGN KEY (super_admin_id) REFERENCES Super_Admin(super_admin_id) ON DELETE CASCADE
 );
 
