@@ -2,14 +2,11 @@ import { registerRootComponent } from 'expo';
 
 import App from './App';
 
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
 registerRootComponent(App);
 exports.deleteCartItem = async (req, res) => {
     try {
-        const user_id = req.user?.id;  // Get user_id from authentication middleware
-        const { item_id } = req.params;  // Extract item_id from URL parameters
+        const user_id = req.user?.id;  
+        const { item_id } = req.params;
 
         if (!user_id || !item_id) {
             return res.status(400).json({ message: "Missing user_id or item_id" });

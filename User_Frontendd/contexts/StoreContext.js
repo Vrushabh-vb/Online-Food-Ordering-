@@ -9,9 +9,8 @@ const StoreContextProvider = ({ children }) => {
   const [totalAmount, setTotalAmount] = useState(0);
   const [cartItems, setCartItems] = useState({});
   const [menuList, setMenuList] = useState([]);
-  const [favorites, setFavorites] = useState([]); // State to manage favorites
+  const [favorites, setFavorites] = useState([]); 
   const url = 'http://13.61.209.211:3000';
-  const uri = 'http://13.61.209.211:3000';
   const [token, setToken] = useState('');
   const [foodList, setFoodList] = useState([]);
 
@@ -63,7 +62,6 @@ const StoreContextProvider = ({ children }) => {
     }
   };
 
-  // Function to calculate total amount
   const getTotalCartAmount = () => {
     let total = 0;
     Object.entries(cartItems).forEach(([itemId, quantity]) => {
@@ -138,21 +136,14 @@ const StoreContextProvider = ({ children }) => {
   };
 
   const contextValue = {
-    foodList,
-    cartItems,
     setCartItems,
     addToCart,
     removeFromCart,
     getTotalCartAmount,
-    url,
-    token,
-    totalAmount,
     setTotalAmount,
     setToken,
-    menuList,
     login,
     logout,
-    favorites,
     addFavorite,
     removeFavorite,
     isFavorite,

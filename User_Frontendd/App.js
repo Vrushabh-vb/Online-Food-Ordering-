@@ -31,7 +31,7 @@ import StoreContextProvider, { StoreContext } from './contexts/StoreContext';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// **Restaurant Stack (for navigating inside Restaurants)**
+// **Restaurant Stack 
 const RestaurantStack = () => (
     <Stack.Navigator  screenOptions={{ headerShown: false }}>
 
@@ -47,7 +47,7 @@ const RestaurantStack = () => (
   </Stack.Navigator>
 );
 
-// **Bottom Tab Navigator**
+//Bottom Tab Nav
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
@@ -78,7 +78,7 @@ const BottomTabNavigator = () => {
   );
 };
 
-// **Main Navigation Stack**
+// **Main Nav Stack
 const MainNavigator = () => {
   const { token } = useContext(StoreContext);
   const [loading, setLoading] = useState(true);
@@ -93,7 +93,7 @@ const MainNavigator = () => {
     checkLoginStatus();
   }, [token]);
 
-  if (loading) return null; // Prevent flicker during token check
+  if (loading) return null; 
 
   return (
     <Stack.Navigator initialRouteName="SplashScreen" screenOptions={{ headerShown: false }}>

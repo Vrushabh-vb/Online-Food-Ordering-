@@ -1,5 +1,8 @@
 const db = require('../config/db');
 const jwt = require('jsonwebtoken');
+const cron = require("node-cron");
+const moment = require("moment-timezone");
+
 require('dotenv').config();
 
 exports.getRequests = (req, res) => {
@@ -99,27 +102,98 @@ exports.registerRestoOwner = async (req, res) => {
 
 // File: superAdminController.js
 
-exports.sendPromoNotification = (req, res) => {
-  const { user_id, message, discount_percentage, validity_hours } = req.body;
+// exports.sendPromoNotification = (req, res) => {
+//   const { user_id, message, discount_percentage, validity_hours } = req.body;
 
-  if (!user_id || !message || !discount_percentage || !validity_hours) {
-    return res.status(400).send('All fields (user_id, message, discount_percentage, validity_hours) are required.');
+//   if (!user_id || !message || !discount_percentage || !validity_hours) {
+//     return res.status(400).send('All fields (user_id, message, discount_percentage, validity_hours) are required.');
+//   }
+
+//   const validityEnd = new Date();
+//   validityEnd.setHours(validityEnd.getHours() + parseInt(validity_hours));
+
+//   const fullMessage = `${message} Discount: ${discount_percentage}%`;
+
+//   db.query(
+//     'INSERT INTO Notifications (user_id, message, validity_end) VALUES (?, ?, ?)',
+//     [user_id, fullMessage, validityEnd],
+//     (err, results) => {
+//       if (err) {
+//         console.error('Database error:', err);
+//         return res.status(500).send('Internal Server Error');
+//       }
+//       res.send({ message: 'Notification sent successfully.' });
+//     }
+//   );
+// };
+
+
+// exports.createOfferNotification = (req, res) => {
+//   const { super_admin_id, offer_name, discount, expires_at , promocode} = req.body;
+
+//   if (!super_admin_id || !offer_name || !discount || !expires_at || !promocode) {
+//       return res.status(400).send("All fields (super_admin_id, offer_name, discount, expires_in_hours ,promocode) are required.");
+//   }
+
+//   if (discount < 1 || discount > 100) {
+//       return res.status(400).send("Discount should be between 1 and 100%.");
+//   }
+
+//   // Calculate expiry time
+//   const expiresAt = new Date();
+//   expiresAt.setHours(expiresAt.getHours() + parseInt(expires_at));
+
+//   db.query(
+//       `INSERT INTO Notifications (super_admin_id, offer_name, discount, expires_at , promocode) VALUES (?, ?, ?, ?,?)`,
+//       [super_admin_id, offer_name, discount, expiresAt , promocode],
+//       (err, results) => {
+//           if (err) {
+//               console.error("Database error:", err);
+//               return res.status(500).send("Internal Server Error");
+//           }
+//           res.send({ message: "Offer notification created successfully.", offer_id: results.insertId });
+//       }
+//   );
+// };
+
+exports.createOfferNotification = (req, res) => {
+  const { super_admin_id, offer_name, discount, extra_minutes , promocode } = req.body;
+
+  if (!super_admin_id || !offer_name || !discount || !extra_minutes || !promocode) {
+      return res.status(400).json({ message: "All fields are required." });
   }
 
-  const validityEnd = new Date();
-  validityEnd.setHours(validityEnd.getHours() + parseInt(validity_hours));
+  // Get current time in IST
+  const createdAt = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
+  const expiresAt = moment(createdAt).add(extra_minutes, "minutes").format("YYYY-MM-DD HH:mm:ss");
 
-  const fullMessage = `${message} Discount: ${discount_percentage}%`;
+  const query = `
+      INSERT INTO Notifications (super_admin_id, offer_name, discount,  expires_at, promocode )
+      VALUES (?, ?, ?, ?,?)
+  `;
 
-  db.query(
-    'INSERT INTO Notifications (user_id, message, validity_end) VALUES (?, ?, ?)',
-    [user_id, fullMessage, validityEnd],
-    (err, results) => {
+  db.query(query, [super_admin_id, offer_name, discount, expiresAt ,promocode], (err, result) => {
       if (err) {
-        console.error('Database error:', err);
-        return res.status(500).send('Internal Server Error');
+          console.error("❌ Error inserting notification:", err);
+          return res.status(500).json({ message: "Database error." });
       }
-      res.send({ message: 'Notification sent successfully.' });
-    }
-  );
+      res.status(201).json({ message: "✅ Notification added successfully!", notification_id: result.insertId });
+  });
 };
+
+// 2️⃣ Auto-Update Expired Notifications (Runs Every Minute)
+cron.schedule("* * * * *", () => {
+  const updateQuery = `
+      UPDATE Notifications 
+      SET status = 0 
+      WHERE status = 1 AND expires_at <= NOW();
+  `;
+
+  db.query(updateQuery, (err, result) => {
+      if (err) {
+          console.error("❌ Error updating expired notifications:", err);
+      } else if (result.affectedRows > 0) {
+          console.log(`✅ ${result.affectedRows} notifications expired and updated.`);
+      }
+  });
+});

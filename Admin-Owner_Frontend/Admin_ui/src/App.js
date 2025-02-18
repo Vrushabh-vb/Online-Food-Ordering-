@@ -1,18 +1,22 @@
-// App.js
-import React, { useContext } from 'react';
-import { AuthProvider, AuthContext } from './context/AuthContext';
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import Login from './components/Login';
-import Dashboard from './components/Dashboard';
+import SuperAdminDashboard from './components/SuperAdminDashboard';
+import RegisterRestaurant from './components/RegisterRestaurant';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
-  const { auth, setAuth } = useContext(AuthContext);
+  const { auth } = useAuth();
 
   return (
-    <AuthProvider>
-      <div className="App">
-        {!auth ? <Login setAuth={setAuth} /> : <Dashboard setAuth={setAuth} />}
-      </div>
-    </AuthProvider>
+    <Router>
+      <Switch>
+        <Route path="/" exact component={Login} />
+        <Route path="/super-admin/dashboard" component={SuperAdminDashboard} />
+        <Route path="/register-restaurant" component={RegisterRestaurant} />
+      </Switch>
+    </Router>
   );
 };
 

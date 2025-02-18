@@ -19,7 +19,6 @@ import { StoreContext } from "../contexts/StoreContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
 import { Platform, ToastAndroid } from "react-native";
-// const uri = useContext(StoreContext);
 const uri = 'http://13.61.209.211:3000';
 
 const API_URL = `${uri}/api/user/menu_items`; // Base URL for images
@@ -57,14 +56,14 @@ const FoodCard = ({ item, addFavorite, removeFavorite, isFavorite }) => {
         console.log("API Response:", response.data);
 
         if (response.data.cart_id) {
-            // ✅ Use Toast only for Android, otherwise use Alert
+           
             if (Platform.OS === "android") {
                 ToastAndroid.show("Item added successfully!", ToastAndroid.SHORT);
             } else {
                 Alert.alert("Success", "Item added successfully!");
             }
 
-            // Fetch updated cart data after adding an item
+          
             fetchCartItems();
         } else {
             Alert.alert("Error", response.data.message || "Failed to add item.");

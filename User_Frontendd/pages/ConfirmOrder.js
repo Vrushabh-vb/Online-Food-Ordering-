@@ -94,7 +94,7 @@ const OrderConfirmation = ({ cartItems, foodList }) => {
                 ]}
                 onPress={() => {
                   setSelectedPaymentMethod(method);
-                  if (method !== "UPI") setUpiId(""); // Clear UPI ID if another method is selected
+                  if (method !== "UPI") setUpiId(""); 
                 }}
               >
                 <Text style={styles.paymentText}>{method}</Text>

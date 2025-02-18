@@ -1,34 +1,69 @@
-// src/components/Notifications.js
-import React, { useState, useEffect } from 'react';
+// File: Notifications.js
+
+import React, { useState } from 'react';
 import axios from 'axios';
-import { Container, Row, Col, Button, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import moment from 'moment';
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState([]);
+  const [message, setMessage] = useState('');
+  const [discountPercentage, setDiscountPercentage] = useState('');
+  const [validityHours, setValidityHours] = useState('');
 
-// Ensure the backend has an endpoint for fetching notifications
-useEffect(() => {
-  axios.get('http://localhost:3000/api/admin/notifications')
-    .then(response => setNotifications(response.data))
-    .catch(error => console.error('Error fetching notifications:', error));
-}, []);
+  const handleSendNotification = async () => {
+    try {
+      await axios.post('http://13.61.209.211/api/super-admin/send-promo-notification', {
+        user_id: 1, // Replace with dynamic user_id
+        message,
+        discount_percentage: discountPercentage,
+        validity_hours: validityHours,
+      });
+      setMessage('');
+      setDiscountPercentage('');
+      setValidityHours('');
+    } catch (error) {
+      console.error('Error sending notification:', error);
+    }
+  };
+
   return (
     <Container className="mt-5">
       <Row>
         <Col>
-          <h2 className="text-center mb-4">Notifications</h2>
-          <ListGroup>
-            {notifications.map((notification, index) => (
-              <ListGroup.Item key={index}>
-                {notification.message}
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-          <Button variant="primary" onClick={() => {
-            // Add functionality to send notifications
-          }}>
-            Send Notification
-          </Button>
+          <h2>Notifications</h2>
+          <Form>
+            <Form.Group controlId="formMessage">
+              <Form.Label>Message</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Enter message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group controlId="formDiscountPercentage">
+              <Form.Label>Discount Percentage</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Enter discount percentage"
+                value={discountPercentage}
+                onChange={(e) => setDiscountPercentage(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group controlId="formValidityHours">
+              <Form.Label>Validity (hours)</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Enter validity in hours"
+                value={validityHours}
+                onChange={(e) => setValidityHours(e.target.value)}
+              />
+            </Form.Group>
+            <Button variant="primary" onClick={handleSendNotification}>
+              Send Notification
+            </Button>
+          </Form>
         </Col>
       </Row>
     </Container>

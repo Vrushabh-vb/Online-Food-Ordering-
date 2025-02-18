@@ -1,37 +1,34 @@
-// Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-// import { AuthContext } from '../context/AuthContext';
-
-const Login = ({ setAuth }) => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const history = useHistory();
+  const { setAuth } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/admin/login', {
+      const response = await axios.post('http://localhost:7000/api/auth/super-admin/login', {
         email,
         password,
       });
-      const token = response.data.token;
+      const { token, role } = response.data;
       localStorage.setItem('token', token);
-      setAuth(token);
-    } catch (error) {
-      if (error.response && error.response.data) {
-        setError(error.response.data.message || 'Invalid credentials.');
-      } else {
-        setError('An error occurred. Please try again later.');
+      setAuth(true);
+      if (role === 'super_admin') {
+        // localStorage.setItem('super_admin_id',super_admin_id)
+        history.push('/super-admin/dashboard');
+      } else if (role === 'admin') {
+        history.push('/admin/dashboard');
       }
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      setError('Invalid credentials.');
     }
   };
 
@@ -61,8 +58,8 @@ const Login = ({ setAuth }) => {
                 required
               />
             </Form.Group>
-            <Button variant="primary" type="submit" disabled={loading}>
-              {loading ? 'Logging in...' : 'Login'}
+            <Button variant="primary" type="submit">
+              Login
             </Button>
           </Form>
           {error && <Alert variant="danger">{error}</Alert>}

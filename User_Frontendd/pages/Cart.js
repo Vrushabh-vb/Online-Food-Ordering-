@@ -30,7 +30,7 @@ const Cart = () => {
   const [password, setPassword] = useState("");
   const [subTotal, setSubTotal] = useState(0);
   const navigation = useNavigation();
-  const [total, setTotal] = useState(99); // Default to 99 for delivery charge
+  const [total, setTotal] = useState(99); 
   
 
   useEffect(() => {
@@ -90,7 +90,7 @@ const Cart = () => {
     };
     calculateSubTotal();
     checkLoginStatus();
-}, [cartItems]); // ✅ Added cartItems to dependencies
+}, [cartItems]); 
 
 
 const calculateSubTotal = () => {
@@ -102,7 +102,7 @@ const calculateSubTotal = () => {
     setTotal(subtotal + deliveryCharge);
   } else {
     setSubTotal(0);
-    setTotal(99); // Minimum charge if the cart is empty
+    setTotal(99);
   }
 };
 
@@ -117,7 +117,7 @@ const calculateSubTotal = () => {
       await AsyncStorage.setItem("user_id", user_id);
   
       setIsLoggedIn(true);
-      fetchCart(); // Ensure the cart loads after login
+      fetchCart(); 
     } catch (error) {
       console.error("Login error:", error);
       Alert.alert("Login Failed", "Invalid username or password.");
@@ -152,7 +152,7 @@ const calculateSubTotal = () => {
 
   const getUserId = async () => {
     try {
-        const userId = await AsyncStorage.getItem("user_id"); // Fix: lowercase "id"
+        const userId = await AsyncStorage.getItem("user_id"); 
         if (!userId) {
             console.error("User ID not found in AsyncStorage");
             return null;
